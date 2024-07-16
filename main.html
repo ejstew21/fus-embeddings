@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Embedding Projector</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-vis"></script>
+</head>
+<body>
+    <h1>Embedding Projector</h1>
+    <div id="projector"></div>
+    <script>
+        async function loadAndVisualizeEmbeddings() {
+            const tensorPath = 'https://gist.githubusercontent.com/ejstew21/46d3adc62b4271d7575a1e90aa8b98e7/raw/embeddings.tsv';
+            const metadataPath = 'https://gist.githubusercontent.com/ejstew21/46d3adc62b4271d7575a1e90aa8b98e7/raw/metadata.tsv';
+
+            const embeddingsResponse = await fetch(tensorPath);
+            const metadataResponse = await fetch(metadataPath);
+
+            const embeddingsText = await embeddingsResponse.text();
+            const metadataText = await metadataResponse.text();
+
+            const embeddings = embeddingsText.split('\n').map(line => line.split('\t').map(Number));
+            const metadata = metadataText.split('\n').map(line => line.split('\t')[0]);
+
+            const points = embeddings.map((embedding, i) => {
+                return {
+                    x: embedding[0],
+                    y: embedding[1],
+                    label: metadata[i]
+                };
+            });
+
+            const surface = { name: 'Embedding Projector', tab: 'Embeddings' };
+            tfvis.render.scatterplot(surface, { values: points, series: ['Points'] });
+        }
+
+        loadAndVisualizeEmbeddings();
+    </script>
+</body>
+</html>
