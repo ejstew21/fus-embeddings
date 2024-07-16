@@ -6,6 +6,7 @@
     <title>Embedding Projector</title>
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-vis"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ml5/0.10.0/ml5.min.js"></script>
 </head>
 <body>
     <h1>Embedding Projector</h1>
@@ -24,9 +25,10 @@
                 })
             ]);
 
-            const pca = tf.decomposition.pca(embeddings, 3);
+            const pca = ml5.PCA(embeddings);
+            const pcaResult = pca.calculate(embeddings, 3);
 
-            const points = pca.map((point, i) => ({
+            const points = pcaResult.map((point, i) => ({
                 x: point[0],
                 y: point[1],
                 z: point[2],
