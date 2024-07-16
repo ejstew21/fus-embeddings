@@ -12,8 +12,8 @@
     <div id="projector"></div>
     <script>
         async function loadAndVisualizeEmbeddings() {
-            const tensorPath = 'https://gist.githubusercontent.com/ejstew21/46d3adc62b4271d7575a1e90aa8b98e7/raw/embeddings.tsv';
-            const metadataPath = 'https://gist.githubusercontent.com/ejstew21/46d3adc62b4271d7575a1e90aa8b98e7/raw/metadata.tsv';
+            const metadataPath  = 'https://gist.githubusercontent.com/ejstew21/46d3adc62b4271d7575a1e90aa8b98e7/raw/2c834d182205ed2488d755f5c3c14f969bba545e/metadata.tsv';
+            const tensorPath = 'https://gist.githubusercontent.com/ejstew21/46d3adc62b4271d7575a1e90aa8b98e7/raw/2c834d182205ed2488d755f5c3c14f969bba545e/embeddings.tsv';
 
             const [embeddings, metadata] = await Promise.all([
                 fetch(tensorPath).then(response => response.text()).then(data => {
