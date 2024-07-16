@@ -15,25 +15,33 @@
             const tensorPath = 'https://gist.githubusercontent.com/ejstew21/46d3adc62b4271d7575a1e90aa8b98e7/raw/embeddings.tsv';
             const metadataPath = 'https://gist.githubusercontent.com/ejstew21/46d3adc62b4271d7575a1e90aa8b98e7/raw/metadata.tsv';
 
-            const embeddingsResponse = await fetch(tensorPath);
-            const metadataResponse = await fetch(metadataPath);
+            const [embeddings, metadata] = await Promise.all([
+                fetch(tensorPath).then(response => response.text()).then(data => {
+                    return data.trim().split('\n').map(line => line.split('\t').map(Number));
+                }),
+                fetch(metadataPath).then(response => response.text()).then(data => {
+                    return data.trim().split('\n').map(line => line.split('\t'));
+                })
+            ]);
 
-            const embeddingsText = await embeddingsResponse.text();
-            const metadataText = await metadataResponse.text();
+            const pca = tf.decomposition.pca(embeddings, 3);
 
-            const embeddings = embeddingsText.split('\n').map(line => line.split('\t').map(Number));
-            const metadata = metadataText.split('\n').map(line => line.split('\t')[0]);
+            const points = pca.map((point, i) => ({
+                x: point[0],
+                y: point[1],
+                z: point[2],
+                label: metadata[i][0]
+            }));
 
-            const points = embeddings.map((embedding, i) => {
-                return {
-                    x: embedding[0],
-                    y: embedding[1],
-                    label: metadata[i]
-                };
+            const surface = { name: '3D PCA Projector', tab: 'PCA' };
+            tfvis.render.scatterplot(surface, { values: points, series: ['Points'] }, {
+                xLabel: 'PC1',
+                yLabel: 'PC2',
+                zLabel: 'PC3',
+                width: 600,
+                height: 400,
+                seriesColors: ['steelblue']
             });
-
-            const surface = { name: 'Embedding Projector', tab: 'Embeddings' };
-            tfvis.render.scatterplot(surface, { values: points, series: ['Points'] });
         }
 
         loadAndVisualizeEmbeddings();
